@@ -3,7 +3,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_any import any_model
 from django_any.test import Client, WithTestDataSeed
-from website.models import Avatar, Company, Vacancy
+from website.models import Avatar, Company, Vacancy, CompanyWorker, \
+     InventoryItem, INVENTORY_TYPE
 
 
 class TestCompanyActions(TestCase):
@@ -33,3 +34,11 @@ class TestCompanyActions(TestCase):
         self.client.post(self.company_url, {'action':'delete_vacancy', 'vacancy_pk':'%s' % bid.pk})
         self.assertEqual(0, Vacancy.objects.count())
 
+    def test_work_with_enough_company_money_succeed(self):
+        CompanyWorker.objects.create(worker=self.avatar, company=self.company, salary_per_hour=1)
+        any_model(InventoryItem, owner=self.avatar, quantity=10, item_type=INVENTORY_TYPE.DUBLONS)        
+
+        initial_health = self.avatar.health
+        self.client.post(self.company_url, {'action':'work'})
+        new_health = Avatar.objects.get(pk=self.avatar.pk).health
+        self.assertTrue(initial_health > new_health)

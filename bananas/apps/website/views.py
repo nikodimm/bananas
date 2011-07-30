@@ -245,6 +245,10 @@ class CompanyView(BaseGameView):
 
         context['avatar'].spent_hours(1)
         context['avatar'].adjust_health(-context['avatar'].health*0.02)
+        if context['avatar'].health < 50:
+            context['avatar'].adjust_happines(-10)
+        elif context['avatar'].health < 90:
+            context['avatar'].adjust_happines(10)
         context['avatar'].save()
 
         if company_dublons < company_worker.salary_per_hour:

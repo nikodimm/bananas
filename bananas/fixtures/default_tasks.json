@@ -1,6 +1,14 @@
 [
     {
         "pk": 1, 
+        "model": "djcelery.intervalschedule", 
+        "fields": {
+            "every": 30, 
+            "period": "seconds"
+        }
+    }, 
+    {
+        "pk": 1, 
         "model": "djcelery.crontabschedule", 
         "fields": {
             "day_of_week": "*", 
@@ -12,7 +20,7 @@
         "pk": 1, 
         "model": "djcelery.periodictasks", 
         "fields": {
-            "last_update": "2011-07-29 17:36:18"
+            "last_update": "2011-07-29 23:06:30"
         }
     }, 
     {
@@ -33,6 +41,86 @@
             "expires": null, 
             "kwargs": "{}", 
             "date_changed": "2011-07-29 17:36:18"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djcelery.periodictask", 
+        "fields": {
+            "task": "website.tasks.process_market", 
+            "name": "Process banana market", 
+            "exchange": null, 
+            "last_run_at": null, 
+            "args": "[1]", 
+            "enabled": true, 
+            "routing_key": null, 
+            "crontab": null, 
+            "interval": 1, 
+            "queue": null, 
+            "total_run_count": 0, 
+            "expires": null, 
+            "kwargs": "{}", 
+            "date_changed": "2011-07-29 23:05:21"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "djcelery.periodictask", 
+        "fields": {
+            "task": "website.tasks.process_market", 
+            "name": "Process banana pies market", 
+            "exchange": null, 
+            "last_run_at": null, 
+            "args": "[2]", 
+            "enabled": true, 
+            "routing_key": null, 
+            "crontab": null, 
+            "interval": 1, 
+            "queue": null, 
+            "total_run_count": 0, 
+            "expires": null, 
+            "kwargs": "{}", 
+            "date_changed": "2011-07-29 23:05:44"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "djcelery.periodictask", 
+        "fields": {
+            "task": "website.tasks.process_market", 
+            "name": "Process gold market", 
+            "exchange": null, 
+            "last_run_at": null, 
+            "args": "[3]", 
+            "enabled": true, 
+            "routing_key": null, 
+            "crontab": null, 
+            "interval": 1, 
+            "queue": null, 
+            "total_run_count": 0, 
+            "expires": null, 
+            "kwargs": "{}", 
+            "date_changed": "2011-07-29 23:06:05"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "djcelery.periodictask", 
+        "fields": {
+            "task": "website.tasks.process_market", 
+            "name": "Process dublons market", 
+            "exchange": null, 
+            "last_run_at": null, 
+            "args": "[4]", 
+            "enabled": true, 
+            "routing_key": null, 
+            "crontab": null, 
+            "interval": 1, 
+            "queue": null, 
+            "total_run_count": 0, 
+            "expires": null, 
+            "kwargs": "{}", 
+            "date_changed": "2011-07-29 23:06:30"
         }
     }
 ]

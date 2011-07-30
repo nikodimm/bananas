@@ -3,4 +3,4 @@ django-celery
 django-kombu
 django-keyedcache
 django-livesettings
-
+django-any

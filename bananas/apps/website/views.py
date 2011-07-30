@@ -162,6 +162,8 @@ class AvatarView(BaseGameView):
 
 
 class MarketView(BaseGameView):
+    template_name = 'market/index.html'
+
     def get_context_data(self, request, **kwargs):
         context = super(MarketView, self).get_context_data(request, **kwargs)
         context['market'] = Market.objects.get(pk=kwargs['market_pk'])

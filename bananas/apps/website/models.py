@@ -145,6 +145,37 @@ class Bid(models.Model):
         self.save()
 
 
+class Company(models.Model):
+    """
+    Everyone could buy a company
+    """
+    name = models.CharField(max_length=50)
+    owner = models.ForeignKey(Avatar)
+    level = models.PositiveIntegerField(default=1)
+
+
+class CompanyWorker(models.Model):
+    """
+    Everyone could works in company
+    """
+    company = models.ForeignKey(Company)
+    worker = models.ForeignKey(Avatar)
+    salary_per_hour = models.DecimalField(decimal_places=2, max_digits=15)
+    active = models.BooleanField(default=True)
+
+    last_worked = models.DateField(blank=True, null=True)
+    total_money_owned = models.DecimalField(default=0, decimal_places=2, max_digits=15)
+
+
+class Vacancy(models.Model):
+    """
+    Free workplace
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    company = models.ForeignKey(Company)
+    salary_per_hour = models.DecimalField(decimal_places=2, max_digits=15)
+
+
 def new_users_handler(sender, user, response, details, **kwargs):
     """
     Each users gets one inital avatar for play

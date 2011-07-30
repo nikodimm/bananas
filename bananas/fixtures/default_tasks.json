@@ -1,0 +1,38 @@
+[
+    {
+        "pk": 1, 
+        "model": "djcelery.crontabschedule", 
+        "fields": {
+            "day_of_week": "*", 
+            "hour": "*", 
+            "minute": "10"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djcelery.periodictasks", 
+        "fields": {
+            "last_update": "2011-07-29 17:36:18"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djcelery.periodictask", 
+        "fields": {
+            "task": "website.tasks.adjust_game_clock", 
+            "name": "Update game clock", 
+            "exchange": null, 
+            "last_run_at": null, 
+            "args": "[]", 
+            "enabled": true, 
+            "routing_key": null, 
+            "crontab": 1, 
+            "interval": null, 
+            "queue": null, 
+            "total_run_count": 0, 
+            "expires": null, 
+            "kwargs": "{}", 
+            "date_changed": "2011-07-29 17:36:18"
+        }
+    }
+]

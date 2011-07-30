@@ -65,6 +65,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'livesettings',
+    'djcelery',
+    'djkombu',    
 ) + PROJECT_APPS
 
 #####################################################################
@@ -118,6 +121,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, 'templates'),
 )
+
+####################################################################
+# Website specific settings
+import djcelery
+djcelery.setup_loader()
+BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_SEND_TASK_ERROR_EMAILS = True
+CELERYD_CONCURRENCY = 1
 
 #####################################################################
 #   There settings need to be overriden in production environment

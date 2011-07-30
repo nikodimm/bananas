@@ -1,1 +1,6 @@
 Django==1.3
+django-celery
+django-kombu
+django-keyedcache
+django-livesettings
+

@@ -1,1 +1,5 @@
 *.pyc
+env
+secret.txt
+dev.db
+bananas/settings_local.py

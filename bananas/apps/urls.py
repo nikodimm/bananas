@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'bananas.views.home', name='home'),
     # url(r'^bananas/', include('bananas.foo.urls')),
 
+    url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

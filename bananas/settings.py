@@ -1,111 +1,62 @@
-# Django settings for bananas project.
+# -*- coding: utf-8 -*-
+import os, sys
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+#####################################################################
+# Project path and environment set-up
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+PROJECT_ROOT = os.path.abspath(
+        os.path.dirname(__file__))
+
+LIBS = (
+    # tuple for path, where each element is an element of tuple 
+    # libs/django -> ('django',) 
+    # libs/foo/bar -> ('foo', 'bar')
 )
 
+# add third-party libs to sys.path 
+for lib in LIBS:
+    libdir = os.path.join(PROJECT_ROOT, 'libs', *lib)
+    if os.path.isdir(libdir) and libdir not in sys.path:
+        sys.path.insert(0, libdir)
+
+# add apps to sys.path 
+appdir = os.path.join(PROJECT_ROOT, 'apps')
+if appdir not in sys.path:
+    sys.path.insert(0, appdir)
+
+#####################################################################
+DEBUG = not os.path.exists(os.path.join(PROJECT_ROOT, 'release'))
+TEMPLATE_DEBUG = DEBUG
+SOUTH_TESTS_MIGRATE=False
+#####################################################################
+ADMINS = (
+    ('Mikhail Podgursliy', 'kmmbvnr@gmail.com'),
+)
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'America/Chicago'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-
+#####################################################################
 SITE_ID = 1
+TIME_ZONE = 'US/Pacific'
+LANGUAGE_CODE = 'en-us'
+USE_I18N = False
+USE_L10N = False
+ROOT_URLCONF = 'urls'
+APPEND_SLASH = True
+REMOVE_WWW = True
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
-USE_I18N = True
+DATE_INPUT_FORMATS = ('%Y-%m-%d', )
 
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
-USE_L10N = True
+DATETIME_INPUT_FORMATS = ('%Y-%m-%d %I:%M %p', )
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+DATETIME_FORMAT = "Y-m-d h:i A"
+SHORT_DATETIME_FORMAT = "Y-m-d h:i A"
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+LANGUAGES = [
+    ('en', 'English'),
+]
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
-
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-# Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
-# List of finder classes that know how to find static files in
-# various locations.
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-)
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '#m&6bdxugnjj&4*s+c3i8pp5isgxb47@z=9w3*%&=ek44y+_*b'
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
-
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-)
-
-ROOT_URLCONF = 'bananas.urls'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+PROJECT_APPS = (
+    'website',
 )
 
 INSTALLED_APPS = (
@@ -113,33 +64,98 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admin',
+) + PROJECT_APPS
+
+#####################################################################
+FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, 'fixtures')]
+
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+MEDIA_URL = '/media/'
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'media')
+STATIC_URL = '/media/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+
+CACHE_BACKEND = 'locmem://'
+CACHE_PREFIX = 'bananas-'
+
+#####################################################################
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+)
+
+LOGIN_REDIRECT_URL = '/'
+
+#####################################################################
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.media',
+    'django.contrib.messages.context_processors.messages'    
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, 'templates'),
+)
+
+#####################################################################
+#   There settings need to be overriden in production environment
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_ROOT, '..', 'dev.db'),
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
+
+#####################################################################
+# Allow override default settings
+try:
+    from settings_local import *
+except ImportError:
+    pass
+
+#####################################################################
+# Hooks and preinitialisation code
+if not hasattr(globals(), 'SECRET_KEY'):
+    # Make this unique, and don't share it with anybody.
+    # Don't share it with anybody 
+    SECRET_FILE = os.path.join(PROJECT_ROOT, '..', 'secret.txt')
+    try:
+        SECRET_KEY = open(SECRET_FILE).read().strip()
+    except IOError:
+        try:
+            from random import choice
+            SECRET_KEY = ''.join([
+                choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+                for i in range(50)])
+            secret = file(SECRET_FILE, 'w')
+            secret.write(SECRET_KEY)
+            secret.close()
+        except IOError:
+            raise Exception('Please create a %s file with random characters '
+                            'to generate your secret key!' % SECRET_FILE)

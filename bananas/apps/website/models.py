@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: django -*-
 from django.db import models
 from django.contrib.auth.models import User
+from social_auth.signals import socialauth_registered
 
 # activate livesettings
 from website import config 
@@ -69,3 +70,10 @@ class InventoryItem(models.Model):
 
     class Meta:
         unique_together = ('owner', 'item_type')
+
+
+def new_users_handler(sender, user, response, details, **kwargs):
+    Avatar.objects.get_or_create(owner=user, name=user.username)
+    return False
+
+socialauth_registered.connect(new_users_handler, sender=None)

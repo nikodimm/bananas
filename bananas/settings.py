@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'social_auth',
     'livesettings',
     'djcelery',
     'djkombu',    
@@ -103,7 +104,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware'
 )
 
-LOGIN_REDIRECT_URL = '/'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_auth.backends.twitter.TwitterBackend',
+)
+
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/admin/'
 
 #####################################################################
 TEMPLATE_LOADERS = (
@@ -145,6 +152,9 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+TWITTER_CONSUMER_KEY = ''
+TWITTER_CONSUMER_SECRET = ''
 
 #####################################################################
 # Allow override default settings

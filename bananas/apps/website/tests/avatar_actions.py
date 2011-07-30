@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_any import any_model
 from django_any.test import Client, WithTestDataSeed
-from website.models import Avatar, INVENTORY_TYPE
+from website.models import Avatar, Company, INVENTORY_TYPE
 
 class TestAvatarActions(TestCase):
     __metaclass__ = WithTestDataSeed
@@ -16,7 +16,7 @@ class TestAvatarActions(TestCase):
             Avatar, owner=self.user,
             today=0, hours_spent=0,
             health=50)
-        self.avatar_url = reverse('avatar_index', kwargs={'pk':self.avatar.pk})
+        self.avatar_url = reverse('avatar_index', kwargs={'avatar_pk':self.avatar.pk})
 
     def test_sleep_action_restore_health_points(self):
         initial_health = self.avatar.health
@@ -44,3 +44,15 @@ class TestAvatarActions(TestCase):
         self.client.post(self.avatar_url, {'action' : 'eat_bananas'})
         new_health = Avatar.objects.get(pk=self.avatar.pk).health
         self.assertTrue(initial_health < new_health)
+
+    def test_buy_company_with_enough_gold_succeed(self):
+        gold = self.avatar.get_inventory_item(INVENTORY_TYPE.GOLD)
+        gold.quantity = 10
+        gold.save()
+
+        self.client.post(self.avatar_url, {'action':'buy_company', 'name' : 'TheCompany'})
+
+        self.assertEqual(1, Company.objects.filter(owner=self.avatar).count())
+
+        company = Company.objects.get(owner=self.avatar)
+        self.assertEqual('TheCompany', company.name)

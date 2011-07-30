@@ -3,13 +3,19 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
 from website.models import Avatar, Company, Vacancy, Market, Bid, ToManyHours, INVENTORY_TYPE
-from website.forms import BidForm
+from website.forms import BidForm, CompanyForm
+
+def form_for_action(form_cls, action, request, **kwargs):
+    if action == request.POST.get('action'):
+        return form_cls(data=request.POST, **kwargs)
+    else:
+        return form_cls(**kwargs)
 
 
 class BaseGameView(TemplateResponseMixin, View):
     def get_context_data(self, request, **kwargs):
         return {
-            'avatar': get_object_or_404(Avatar, owner=request.user, pk=kwargs['pk'])
+            'avatar': get_object_or_404(Avatar, owner=request.user, pk=kwargs['avatar_pk'])
         }
 
     def get(self, request, *args, **kwargs):
@@ -35,6 +41,11 @@ class BaseGameView(TemplateResponseMixin, View):
 
 class AvatarView(BaseGameView):
     template_name = 'avatar/index.html'
+
+    def get_context_data(self, request, **kwargs):
+        context = super(AvatarView, self).get_context_data(request, **kwargs)
+        context['buy_company_form'] = form_for_action(CompanyForm, 'buy_company', request)
+        return context
 
     def action_sleep(self, request, context, *args, **kwargs):
         """
@@ -131,10 +142,23 @@ class AvatarView(BaseGameView):
         else:
             messages.info(request, 'Tried to sell himself to slavery, nobody gets it')
             context['avatar'].adjust_health(-context['avatar'].health*0.05)
-            context.adjust_happines(-100)
+            context['avatar'].adjust_happines(-100)
+            context['avatar'].save()
 
     def action_buy_company(self, request, context, *args, **kwargs):
-        pass
+        form = context['buy_company_form']
+        if form.is_valid():
+            gold = context['avatar'].get_inventory_item(INVENTORY_TYPE.GOLD)
+            if gold.quantity >= 5:
+                company = form.save(commit=False)
+                company.owner = context['avatar']
+                company.save()
+            else:
+                messages.info(request, 'They laugh at my hole-ridden suite!')
+                context['avatar'].adjust_happines(-10)
+                context['avatar'].save()
+        else:
+            messages.info(request, 'Oh, shi, please input correct values')
 
 
 class MarketView(BaseGameView):
@@ -143,7 +167,7 @@ class MarketView(BaseGameView):
         context['market'] = Market.objects.get(pk=kwargs['market_pk'])
         context['buy_bids'] = Bid.objects.filter(market=context['market'], direction=Bid.TYPE.BUY).order_by('-rate', '-created')[:50]
         context['sell_bids'] = Bid.objects.filter(market=context['market'], direction=Bid.TYPE.SELL).order_by('rate', '-created')[:50]
-        context['bid_form'] = BidForm(request.POST or None)
+        context['bid_form'] = form_for_action(BidForm, 'create_bid', request)
         return context
 
     def action_create_bid(self, request, context, *args, **kwargs):

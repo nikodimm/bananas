@@ -3,5 +3,5 @@ from django.conf.urls.defaults import patterns, url
 from website.views import AvatarView
 
 urlpatterns = patterns('website.views',
-    url(r'^avatar/(?P<pk>\d+)/$', AvatarView.as_view(), name='avatar_index'),
+    url(r'^avatar/(?P<avatar_pk>\d+)/$', AvatarView.as_view(), name='avatar_index'),
 )

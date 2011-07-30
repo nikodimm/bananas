@@ -2,8 +2,9 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
-from website.models import Avatar, Company, Vacancy, Market, Bid, ToManyHours, INVENTORY_TYPE
 from website.forms import BidForm, CompanyForm
+from website.models import Avatar, Company, CompanyWorker, Vacancy, Market, Bid, \
+     ToManyHours, INVENTORY_TYPE
 
 def form_for_action(form_cls, action, request, **kwargs):
     if action == request.POST.get('action'):
@@ -198,8 +199,19 @@ class VacancyListView(BaseGameView):
         context['vacancy_list'] = Vacancy.objects.all().order_by('-created')
         return context
 
-    def action_hire_to_vacancy(self, request, context, *args, **kwargs):
-        pass
+    def action_accept_vacancy(self, request, context, *args, **kwargs):
+        vacancy = get_object_or_404(Vacancy, pk=request.POST.get('vacancy_pk'))
+
+        worker, _ = CompanyWorker.objects.get_or_create(
+            company=vacancy.company, worker=context['avatar'],
+            salary_per_hour=vacancy.salary_per_hour)
+        worker.active = True
+        worker.save()
+        
+        vacancy.delete()
+        messages.info(request, 'You are hired!')
+
+        return context
 
 
 class CompanyView(BaseGameView):
@@ -214,9 +226,6 @@ class CompanyView(BaseGameView):
         pass
 
     def action_delete_vacancy(self, request, context, *args, **kwargs):
-        pass
-
-    def action_hire_to_vacancy(self, request, context, *args, **kwargs):
         pass
 
     def action_work(self, request, context, *args, **kwargs):

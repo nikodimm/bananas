@@ -7,7 +7,6 @@ from website.models import Avatar, Company, INVENTORY_TYPE
 
 class TestAvatarActions(TestCase):
     __metaclass__ = WithTestDataSeed
-    fixtures = ['default_users.json']
 
     def setUp(self):
         self.client = Client()

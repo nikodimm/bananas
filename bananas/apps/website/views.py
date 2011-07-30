@@ -2,8 +2,7 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
-from website.models import Avatar, InventoryItem, \
-     ToManyHoursException, INVENTORY_TYPE
+from website.models import Avatar, ToManyHours, INVENTORY_TYPE
 
 
 class AvatarView(TemplateResponseMixin, View):
@@ -29,7 +28,7 @@ class AvatarView(TemplateResponseMixin, View):
         context = self.get_context_data(request, **kwargs)
         try:
             context = handler(request, context, *args, **kwargs)
-        except ToManyHoursException:
+        except ToManyHours:
             messages.error(request, 'No more hours today, take a rest')
 
         return self.render_to_response(context)

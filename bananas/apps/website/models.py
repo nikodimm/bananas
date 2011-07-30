@@ -7,10 +7,19 @@ from social_auth.signals import socialauth_registered
 from website import config 
 
 
-class ToManyHoursException(Exception):
+class ToManyHours(Exception):
     """
-    Raise, when user truies to sent more that 24 hours a day
+    Raised, when user truies to sent more that 24 hours a day
     """
+
+
+class NotEnoughQuantity(Exception):
+    """
+    Raised, when there are not enought items in inventory to process bid
+    """
+    def __init__(self, bid):
+        self.bid = bid
+
 
 class INVENTORY_TYPE:
     BANANAS = 'BANANAS'
@@ -50,7 +59,7 @@ class Avatar(models.Model):
             self.hours_spent = 0
 
         if self.hours_spent + hours > 24:
-            raise ToManyHoursException()
+            raise ToManyHours()
 
         self.hours_spent += hours
 
@@ -109,12 +118,33 @@ class Bid(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     owner = models.ForeignKey(Avatar)
-    marker = models.ForeignKey(Market)
+    market = models.ForeignKey(Market)
     quantity = models.DecimalField(decimal_places=2, max_digits=15)
     rate = models.DecimalField(decimal_places=2, max_digits=15)
     direction = models.CharField(max_length=50, choices=TYPE_CHOICES)
 
-    
+    def process(self, deal_quantity, deal_rate):
+        sell_items = self.owner.get_inventory_item(self.market.sell_item_type)
+        buy_items = self.owner.get_inventory_item(self.market.buy_item_type)
+        
+        if self.direction == Bid.TYPE.SELL:
+            sell_items.quantity -= deal_quantity
+            buy_items.quantity += deal_quantity*deal_rate
+            if sell_items.quantity<0:
+                raise NotEnoughQuantity(self)
+        else:
+            sell_items.quantity += deal_quantity
+            buy_items.quantity -= deal_quantity*deal_rate
+            if buy_items.quantity<0:
+                raise NotEnoughQuantity(self)
+
+        sell_items.save()
+        buy_items.save()
+
+        self.quantity -= deal_quantity
+        self.save()
+
+
 def new_users_handler(sender, user, response, details, **kwargs):
     """
     Each users gets one inital avatar for play

@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_any import any_model
 from django_any.test import Client, WithTestDataSeed
-from website.models import Avatar
+from website.models import Avatar, INVENTORY_TYPE
 
 class TestAvatarActions(TestCase):
     __metaclass__ = WithTestDataSeed
@@ -24,3 +24,23 @@ class TestAvatarActions(TestCase):
         new_health = Avatar.objects.get(pk=self.avatar.pk).health
         self.assertTrue(initial_health < new_health)
                          
+    def test_gather_bananas_extend_inventory(self):
+        self.client.post(self.avatar_url, {'action' : 'gather_bananas'})
+        bananas = self.avatar.get_inventory_item(INVENTORY_TYPE.BANANAS)
+        self.assertEqual(1, bananas.quantity)
+
+    def test_eathing_shoes_is_bad_for_heals(self):
+        initial_health = self.avatar.health
+        self.client.post(self.avatar_url, {'action' : 'eat_bananas'})
+        new_health = Avatar.objects.get(pk=self.avatar.pk).health
+        self.assertTrue(initial_health > new_health)
+
+    def test_eathing_bananas_is_good_for_heals(self):
+        bananas = self.avatar.get_inventory_item(INVENTORY_TYPE.BANANAS)
+        bananas.quantity = 1
+        bananas.save()
+        
+        initial_health = self.avatar.health
+        self.client.post(self.avatar_url, {'action' : 'eat_bananas'})
+        new_health = Avatar.objects.get(pk=self.avatar.pk).health
+        self.assertTrue(initial_health < new_health)

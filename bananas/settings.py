@@ -62,6 +62,7 @@ PROJECT_APPS = (
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
@@ -99,6 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware'
 )
 
 LOGIN_REDIRECT_URL = '/'
@@ -115,7 +117,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.media',
-    'django.contrib.messages.context_processors.messages'    
+    'django.contrib.messages.context_processors.messages'
 )
 
 TEMPLATE_DIRS = (

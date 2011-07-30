@@ -14,11 +14,23 @@ class ToManyHoursException(Exception):
 
 class INVENTORY_TYPE:
     BANANAS = 'BANANAS'
+    BANANA_PIES = 'BANANA_PIES'
+    DUBLONS = 'DUBLONS'
+    GOLD = 'GOLD'
 
-INVENTORY_TYPE_CHOICES = ((INVENTORY_TYPE.BANANAS, 'Bananas'), )
+INVENTORY_TYPE_CHOICES = (
+    (INVENTORY_TYPE.BANANAS, 'Bananas'),
+    (INVENTORY_TYPE.BANANA_PIES, 'Banana pies'),
+    (INVENTORY_TYPE.DUBLONS, 'Dublons'),
+    (INVENTORY_TYPE.GOLD, 'Gold'),
+)
 
 
 class Avatar(models.Model):
+    """
+    Since we going to alllow avatars to die, let users
+    to have more than one game character
+    """
     owner = models.ForeignKey(User)
     name = models.CharField(max_length=50)
 
@@ -64,15 +76,49 @@ class Avatar(models.Model):
 
 
 class InventoryItem(models.Model):
+    """
+    Money or other things belongs to avatar
+    """
     owner = models.ForeignKey(Avatar)
     item_type = models.CharField(choices=INVENTORY_TYPE_CHOICES, max_length=50)
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.DecimalField(default=0, decimal_places=2, max_digits=15)
 
     class Meta:
         unique_together = ('owner', 'item_type')
 
 
+class Market(models.Model):
+    """
+    The place where evrybody could sells and buys anithing
+    """
+    name = models.CharField(max_length=50)
+    sell_item_type = models.CharField(choices=INVENTORY_TYPE_CHOICES, max_length=50)
+    buy_item_type = models.CharField(choices=INVENTORY_TYPE_CHOICES, max_length=50)
+
+
+class Bid(models.Model):
+    """
+    The users bid for the market
+    """
+    class TYPE:
+        SELL = 'SELL'
+        BUY = 'BUY'
+    TYPE_CHOICES = ((TYPE.SELL, 'Sell'),
+                    (TYPE.BUY, 'Buy'))
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    owner = models.ForeignKey(Avatar)
+    marker = models.ForeignKey(Market)
+    quantity = models.DecimalField(decimal_places=2, max_digits=15)
+    rate = models.DecimalField(decimal_places=2, max_digits=15)
+    direction = models.CharField(max_length=50, choices=TYPE_CHOICES)
+
+    
 def new_users_handler(sender, user, response, details, **kwargs):
+    """
+    Each users gets one inital avatar for play
+    """
     Avatar.objects.get_or_create(owner=user, name=user.username)
     return False
 

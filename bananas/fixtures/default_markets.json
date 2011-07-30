@@ -1,0 +1,38 @@
+[
+    {
+        "pk": 1, 
+        "model": "website.market", 
+        "fields": {
+            "sell_item_type": "BANANAS", 
+            "buy_item_type": "DUBLONS", 
+            "name": "Banana market"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "website.market", 
+        "fields": {
+            "sell_item_type": "BANANA_PIES", 
+            "buy_item_type": "DUBLONS", 
+            "name": "Banana pies market"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "website.market", 
+        "fields": {
+            "sell_item_type": "GOLD", 
+            "buy_item_type": "DUBLONS", 
+            "name": "Gold market"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "website.market", 
+        "fields": {
+            "sell_item_type": "DUBLONS", 
+            "buy_item_type": "GOLD", 
+            "name": "Dublons market"
+        }
+    }
+]

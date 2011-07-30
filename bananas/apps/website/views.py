@@ -2,7 +2,7 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
-from website.forms import BidForm, CompanyForm
+from website.forms import BidForm, CompanyForm, VacancyForm
 from website.models import Avatar, Company, CompanyWorker, Vacancy, Market, Bid, \
      ToManyHours, INVENTORY_TYPE
 
@@ -218,15 +218,42 @@ class CompanyView(BaseGameView):
     template_name = 'company/index.html'
 
     def get_context_data(self, request, **kwargs):
-        context = super(VacancyListView, self).get_context_data(request, **kwargs)
+        context = super(CompanyView, self).get_context_data(request, **kwargs)
         context['company'] = Company.objects.get(pk=kwargs['company_pk'])
+        context['create_vacancy_form'] = form_for_action(VacancyForm, 'create_vacancy', request)
         return context
 
     def action_create_vacancy(self, request, context, *args, **kwargs):
-        pass
+        form = context['create_vacancy_form']
+        if form.is_valid():
+            vacancy = form.save(commit=False)
+            vacancy.company = context['company']
+            vacancy.save()
+        else:
+            messages.info(request, 'Oh, shi, please input correct values')
 
     def action_delete_vacancy(self, request, context, *args, **kwargs):
-        pass
+        vacancy = get_object_or_404(Vacancy, pk=request.POST.get('vacancy_pk', 0), company__owner=context['avatar'])
+        vacancy.delete()
+        messages.info(request, 'Vacancy succesfully deleted')
 
     def action_work(self, request, context, *args, **kwargs):
-        pass
+        company_worker = get_object_or_404(CompanyWorker, active=True, company=context['company'], worker=context['avatar'])
+
+        company_dublons = context['company'].owner.get_inventory_item(INVENTORY_TYPE.DUBLONS)
+        avatar_dublons = context['avatar'].get_inventory_item(INVENTORY_TYPE.DUBLONS)
+
+        context['avatar'].spent_hours(1)
+        context['avatar'].adjust_health(-context['avatar'].health*0.02)
+        context['avatar'].save()
+
+        if company_dublons < company_worker.salary_per_hour:
+            messages.info(request, 'Oh, shi, no money at company')
+        else:
+            avatar_dublons.quantity += company_worker.salary_per_hour
+            company_dublons.quantity -= company_worker.salary_per_hour 
+
+            avatar_dublons.save()
+            company_dublons.save()
+
+        return context
